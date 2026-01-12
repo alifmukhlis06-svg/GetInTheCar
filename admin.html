@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>GetInTheCar — Admin Dashboard</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* Admin Dashboard Specific Styles */
+.dashboard-header {
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 85, 85, 0.1);
+  padding: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.header-title {
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(90deg, #ff5555, #ffdd00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-stats {
+  display: flex;
+  gap: 20px;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 85, 85, 0.1);
+  border-radius: 12px;
+  padding: 16px 20px;
+  min-width: 120px;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.stat-card:hover {
+  background: rgba(255, 85, 85, 0.05);
+  border-color: rgba(255, 85, 85, 0.2);
+  transform: translateY(-2px);
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 4px;
+  background: linear-gradient(90deg, #ff5555, #ffdd00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dashboard-content {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.dashboard-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 85, 85, 0.1);
+  border-radius: 16px;
+  padding: 24px;
+  backdrop-filter: blur(10px);
+}
+
+.dashboard-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 85, 85, 0.1);
+}
+
+.dashboard-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffdd00;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-online {
+  background: rgba(76, 175, 80, 0.15);
+  color: #4CAF50;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.status-offline {
+  background: rgba(255, 107, 107, 0.15);
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+.status-away {
+  background: rgba(255, 221, 0, 0.15);
+  color: #ffdd00;
+  border: 1px solid rgba(255, 221, 0, 0.3);
+}
+
+/* User/Driver Lists */
+.user-list, .driver-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.user-item, .driver-item {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 85, 85, 0.05);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  transition: all 0.2s;
+}
+
+.user-item:hover, .driver-item:hover {
+  background: rgba(255, 85, 85, 0.05);
+  border-color: rgba(255, 85, 85, 0.2);
+  transform: translateX(4px);
+}
+
+.user-avatar, .driver-avatar {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #ff5555, #ffdd00);
+  color: #0a0a0f;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 16px;
+  margin-right: 16px;
+}
+
+.user-info, .driver-info {
+  flex: 1;
+}
+
+.user-name, .driver-name {
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.user-email, .driver-email {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.user-details, .driver-details {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.user-actions, .driver-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 85, 85, 0.1);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.action-btn:hover {
+  background: rgba(255, 85, 85, 0.1);
+  border-color: rgba(255, 85, 85, 0.3);
+  color: #ff5555;
+}
+
+.action-btn.edit:hover {
+  color: #ffdd00;
+}
+
+.action-btn.delete:hover {
+  color: #ff6b6b;
+}
+
+/* Ride Analytics */
+.ride-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.ride-stat-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 85, 85, 0.05);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+
+.ride-stat-value {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 4px;
+  background: linear-gradient(90deg, #ff5555, #ffdd00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ride-stat-label {
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Recent Rides Table */
+.rides-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.rides-table th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid rgba(255, 85, 85, 0.1);
+}
+
+.rides-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 85, 85, 0.05);
+  font-size: 14px;
+}
+
+.rides-table tr:hover {
+  background: rgba(255, 85, 85, 0.05);
+}
+
+/* Filter Controls */
+.filter-controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filter-select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 85, 85, 0.2);
+  border-radius: 8px;
+  padding: 8px 16px;
+  color: var(--text);
+  font-size: 14px;
+  min-width: 150px;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #ff5555;
+  box-shadow: 0 0 0 2px rgba(255, 85, 85, 0.2);
+}
+
+.search-input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 85, 85, 0.2);
+  border-radius: 8px;
+  padding: 8px 16px;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #ff5555;
+  box-shadow: 0 0 0 2px rgba(255, 85, 85, 0.2);
+}
+
+/* Modal Styles for User/Driver Management */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.user-modal, .driver-modal {
+  background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+  border: 1px solid rgba(255, 85, 85, 0.15);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 24px;
+  color: var(--text);
+  box-shadow: 0 20px 60px rgba(255, 59, 48, 0.15), 
+              0 0 0 1px rgba(255, 221, 0, 0.1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 85, 85, 0.1);
+}
+
+.modal-title {
+  font-size: 24px;
+  font-weight: 700;
+  background: linear-gradient(90deg, #ff5555, #ffdd00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 28px;
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: rgba(255, 85, 85, 0.1);
+  color: #ff5555;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.form-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 85, 85, 0.2);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #ff5555;
+  box-shadow: 0 0 0 2px rgba(255, 85, 85, 0.2);
+}
+
+.form-select {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 85, 85, 0.2);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: #ff5555;
+  box-shadow: 0 0 0 2px rgba(255, 85, 85, 0.2);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 85, 85, 0.1);
+}
+
+/* Toggle Switch */
+.toggle-switch {
+  position: relative;
+  width: 50px;
+  height: 26px;
+}
+
+.toggle-input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 85, 85, 0.2);
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 4px;
+  bottom: 4px;
+  background-color: #0a0a0f;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+.toggle-input:checked + .toggle-slider {
+  background: linear-gradient(90deg, #ff5555, #ffdd00);
+}
+
+.toggle-input:checked + .toggle-slider:before {
+  transform: translateX(24px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .header-stats {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .stat-card {
+    min-width: 100px;
+    padding: 12px;
+  }
+  
+  .stat-value {
+    font-size: 24px;
+  }
+  
+  .ride-stats {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+<body class="dark">
+
+<!-- SIDEBAR -->
+<aside class="sidebar card fade-in">
+  <div class="brand">
+    <div class="logo">GET</div>
+    <div>
+      <h2>GetInTheCar</h2>
+      <div class="small muted">Admin Dashboard</div>
+    </div>
+  </div>
+
+  <nav>
+    <a href="admin.html" class="active">📊 Dashboard</a>
+    <a href="usermanage.html">👥 User Management</a>
+    <a href="drivermanage.html">🚗 Driver Management</a>
+    <a href="index.html">🔐 Log Out</a>
+  </nav>
+
+  <div class="toggle-row">
+    <div class="small muted">Dark Mode</div>
+    <div id="darkSwitch" class="switch dark-toggle-on" title="Toggle dark mode">
+      <div class="knob"></div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <!-- Dashboard Header -->
+  <div class="dashboard-header">
+    <div class="header-top">
+      <div class="header-title">Admin Dashboard</div>
+      <div class="small muted">Welcome, <span style="color:var(--accent-1)">Admin</span> • Last login: Today, 09:45 AM</div>
+    </div>
+    
+    <div class="header-stats">
+      <div class="stat-card">
+        <div class="stat-value" id="totalUsers">128</div>
+        <div class="stat-label">Total Users</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="totalDrivers">47</div>
+        <div class="stat-label">Active Drivers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="totalRides">892</div>
+        <div class="stat-label">Today's Rides</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="totalRevenue">4,528.50</div>
+        <div class="stat-label">Revenue (RM)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div class="dashboard-content">
+    <!-- Online Users Card -->
+    <div class="dashboard-card">
+      <div class="dashboard-card-header">
+        <div class="dashboard-card-title">👥 Online Users</div>
+        <div class="status-badge status-online" id="onlineUsersCount">24 Online</div>
+      </div>
+      
+      <div class="filter-controls">
+        <select class="filter-select" id="userStatusFilter" onchange="filterUsers()">
+          <option value="all">All Status</option>
+          <option value="online">Online</option>
+          <option value="offline">Offline</option>
+          <option value="in-ride">In Ride</option>
+        </select>
+        <input type="text" class="search-input" id="userSearch" placeholder="Search users..." oninput="filterUsers()">
+      </div>
+      
+      <div class="user-list" id="userList">
+        <!-- User items will be dynamically inserted here -->
+      </div>
+    </div>
+
+    <!-- Driver Management Card -->
+    <div class="dashboard-card">
+      <div class="dashboard-card-header">
+        <div class="dashboard-card-title">🚗 Driver Status</div>
+        <button class="btn" onclick="addNewDriver()" style="padding: 8px 16px; font-size: 12px;">+ Add Driver</button>
+      </div>
+      
+      <div class="filter-controls">
+        <select class="filter-select" id="driverStatusFilter" onchange="filterDrivers()">
+          <option value="all">All Drivers</option>
+          <option value="online">Online Now</option>
+          <option value="offline">Offline</option>
+          <option value="available">Available</option>
+          <option value="busy">On Trip</option>
+        </select>
+        <input type="text" class="search-input" id="driverSearch" placeholder="Search drivers..." oninput="filterDrivers()">
+      </div>
+      
+      <div class="driver-list" id="driverList">
+        <!-- Driver items will be dynamically inserted here -->
+      </div>
+    </div>
+
+    <!-- Ride Analytics Card -->
+    <div class="dashboard-card">
+      <div class="dashboard-card-header">
+        <div class="dashboard-card-title">📊 Ride Analytics</div>
+        <div class="small muted">Today</div>
+      </div>
+      
+      <div class="ride-stats">
+        <div class="ride-stat-card">
+          <div class="ride-stat-value">124</div>
+          <div class="ride-stat-label">Completed</div>
+        </div>
+        <div class="ride-stat-card">
+          <div class="ride-stat-value">12</div>
+          <div class="ride-stat-label">Ongoing</div>
+        </div>
+        <div class="ride-stat-card">
+          <div class="ride-stat-value">5</div>
+          <div class="ride-stat-label">Cancelled</div>
+        </div>
+        <div class="ride-stat-card">
+          <div class="ride-stat-value">92%</div>
+          <div class="ride-stat-label">Satisfaction</div>
+        </div>
+      </div>
+      
+      <div style="margin-top: 20px;">
+        <div class="dashboard-card-title">Recent Rides</div>
+        <div style="overflow-x: auto;">
+          <table class="rides-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>User</th>
+                <th>Driver</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="recentRides">
+              <!-- Recent rides will be inserted here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- System Status Card -->
+    <div class="dashboard-card">
+      <div class="dashboard-card-header">
+        <div class="dashboard-card-title">⚙️ System Status</div>
+        <div class="status-badge status-online">All Systems Normal</div>
+      </div>
+      
+      <div style="margin: 20px 0;">
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span class="form-label">API Server</span>
+            <span class="status-badge status-online">Online</span>
+          </div>
+          <div class="small muted" style="margin-bottom: 16px;">Response time: 42ms</div>
+        </div>
+        
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span class="form-label">Database</span>
+            <span class="status-badge status-online">Online</span>
+          </div>
+          <div class="small muted" style="margin-bottom: 16px;">Last sync: 2 minutes ago</div>
+        </div>
+        
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span class="form-label">Payment Gateway</span>
+            <span class="status-badge status-online">Online</span>
+          </div>
+          <div class="small muted" style="margin-bottom: 16px;">Processing normally</div>
+        </div>
+      </div>
+      
+      <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(255, 85, 85, 0.1);">
+        <div class="dashboard-card-title" style="margin-bottom: 16px;">Quick Actions</div>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <button class="btn" onclick="generateReport()" style="padding: 8px 16px; font-size: 12px;">📊 Generate Report</button>
+          <button class="small-btn" onclick="sendBroadcast()" style="padding: 8px 16px; font-size: 12px;">📢 Send Notification</button>
+          <button class="small-btn" onclick="viewLogs()" style="padding: 8px 16px; font-size: 12px;">📋 View Logs</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- User Management Modal -->
+<div id="userModal" class="modal-overlay" style="display:none;">
+  <div class="user-modal">
+    <div class="modal-header">
+      <div class="modal-title" id="userModalTitle">Edit User</div>
+      <button class="close-btn" onclick="closeUserModal()">×</button>
+    </div>
+    
+    <div id="userModalContent">
+      <!-- User form will be dynamically inserted here -->
+    </div>
+  </div>
+</div>
+
+<!-- Driver Management Modal -->
+<div id="driverModal" class="modal-overlay" style="display:none;">
+  <div class="driver-modal">
+    <div class="modal-header">
+      <div class="modal-title" id="driverModalTitle">Edit Driver</div>
+      <button class="close-btn" onclick="closeDriverModal()">×</button>
+    </div>
+    
+    <div id="driverModalContent">
+      <!-- Driver form will be dynamically inserted here -->
+    </div>
+  </div>
+</div>
+
+<script>
+// Theme toggle logic
+const body = document.body;
+const darkSwitch = document.getElementById('darkSwitch');
+darkSwitch.addEventListener('click', () => {
+  const knob = darkSwitch.querySelector('.knob');
+  darkSwitch.classList.toggle('dark-toggle-on');
+  body.classList.toggle('dark');
+  if (body.classList.contains('dark')) {
+    knob.style.left = '25px';
+    knob.style.boxShadow = '0 10px 30px rgba(255, 221, 0, 0.12)';
+  } else {
+    knob.style.left = '3px';
+    knob.style.boxShadow = '0 6px 18px rgba(255, 59, 48, 0.12)';
+  }
+});
+
+// Sample Data
+const usersData = [
+  { id: 1, name: 'Alif Mukhlis', email: 'alif@uitm.edu.my', phone: '+6012-345-6789', 
+    status: 'online', lastActive: 'Just now', rides: 24, joined: '2024-01-15' },
+  { id: 2, name: 'Nurul Huda', email: 'nurul@uitm.edu.my', phone: '+6012-987-6543', 
+    status: 'in-ride', lastActive: '2 min ago', rides: 18, joined: '2024-02-10' },
+  { id: 3, name: 'Ahmad Firdaus', email: 'ahmad@uitm.edu.my', phone: '+6013-456-7890', 
+    status: 'offline', lastActive: '1 hour ago', rides: 32, joined: '2023-12-05' },
+  { id: 4, name: 'Siti Aminah', email: 'siti@uitm.edu.my', phone: '+6014-567-8901', 
+    status: 'online', lastActive: 'Just now', rides: 15, joined: '2024-01-25' },
+  { id: 5, name: 'Mohd Rizal', email: 'rizal@uitm.edu.my', phone: '+6015-678-9012', 
+    status: 'offline', lastActive: '3 hours ago', rides: 41, joined: '2023-11-20' },
+  { id: 6, name: 'Fatimah Zahra', email: 'fatimah@uitm.edu.my', phone: '+6016-789-0123', 
+    status: 'online', lastActive: '5 min ago', rides: 22, joined: '2024-02-15' },
+];
+
+const driversData = [
+  { id: 1, name: 'Yaseer Yahaya', email: 'yaseer@driver.com', phone: '+6017-890-1234', 
+    status: 'available', rating: 4.8, trips: 1247, vehicle: 'Myvi (AKM 7110)', 
+    earnings: '12,450.50', online: true },
+  { id: 2, name: 'Masturina Balqis', email: 'masturina@driver.com', phone: '+6018-901-2345', 
+    status: 'busy', rating: 4.9, trips: 892, vehicle: 'Proton Persona (CCU 2781)', 
+    earnings: '8,920.75', online: true },
+  { id: 3, name: 'Aiman Iskandar', email: 'aiman@driver.com', phone: '+6019-012-3456', 
+    status: 'available', rating: 4.7, trips: 1563, vehicle: 'Perodua Axia (ALD 8794)', 
+    earnings: '15,630.20', online: true },
+  { id: 4, name: 'Nurul Izzati', email: 'izzati@driver.com', phone: '+6011-123-4567', 
+    status: 'offline', rating: 4.6, trips: 734, vehicle: 'Honda City (PPD 1234)', 
+    earnings: '7,340.90', online: false },
+  { id: 5, name: 'Haziq Aiman', email: 'haziq@driver.com', phone: '+6012-234-5678', 
+    status: 'available', rating: 4.5, trips: 521, vehicle: 'Yamaha Y15 (VJD 5734)', 
+    earnings: '5,210.30', online: true },
+];
+
+const recentRidesData = [
+  { id: 1, time: '09:45 AM', user: 'Alif Mukhlis', driver: 'Yaseer Yahaya', 
+    amount: 'RM 12.30', status: 'completed', from: 'Yasmeen Nasi Kandar', to: 'UiTM Arau' },
+  { id: 2, time: '09:30 AM', user: 'Nurul Huda', driver: 'Masturina Balqis', 
+    amount: 'RM 8.50', status: 'ongoing', from: 'Kolej Dahlia', to: 'Kompleks Star' },
+  { id: 3, time: '09:15 AM', user: 'Ahmad Firdaus', driver: 'Aiman Iskandar', 
+    amount: 'RM 15.20', status: 'completed', from: 'HEA UITM', to: 'Arau KTM Station' },
+  { id: 4, time: '09:00 AM', user: 'Siti Aminah', driver: 'Haziq Aiman', 
+    amount: 'RM 6.80', status: 'completed', from: 'UiTM Arau', to: 'ZUS Coffee' },
+  { id: 5, time: '08:45 AM', user: 'Mohd Rizal', driver: 'Yaseer Yahaya', 
+    amount: 'RM 10.50', status: 'cancelled', from: 'Kolej Melati', to: 'McDonald\'s' },
+];
+
+// Initialize Dashboard
+function initializeDashboard() {
+  updateStats();
+  renderUserList();
+  renderDriverList();
+  renderRecentRides();
+  simulateRealTimeUpdates();
+}
+
+// Update Statistics
+function updateStats() {
+  const onlineUsers = usersData.filter(u => u.status === 'online' || u.status === 'in-ride').length;
+  const onlineDrivers = driversData.filter(d => d.online).length;
+  const totalRevenue = recentRidesData
+    .filter(r => r.status === 'completed')
+    .reduce((sum, r) => sum + parseFloat(r.amount.replace('RM ', '')), 0);
+  
+  document.getElementById('totalUsers').textContent = usersData.length;
+  document.getElementById('totalDrivers').textContent = onlineDrivers;
+  document.getElementById('totalRides').textContent = recentRidesData.filter(r => r.status !== 'cancelled').length;
+  document.getElementById('totalRevenue').textContent = totalRevenue.toFixed(2);
+  document.getElementById('onlineUsersCount').textContent = `${onlineUsers} Online`;
+}
+
+// Render User List
+function renderUserList(filteredUsers = null) {
+  const userList = document.getElementById('userList');
+  const users = filteredUsers || usersData;
+  
+  userList.innerHTML = '';
+  
+  users.forEach(user => {
+    const userDiv = document.createElement('div');
+    userDiv.className = 'user-item fade-in';
+    
+    const statusColor = user.status === 'online' ? '#4CAF50' : 
+                       user.status === 'in-ride' ? '#ffdd00' : '#ff6b6b';
+    const statusText = user.status === 'in-ride' ? 'In Ride' : user.status.charAt(0).toUpperCase() + user.status.slice(1);
+    
+    userDiv.innerHTML = `
+      <div class="user-avatar">${user.name.charAt(0)}</div>
+      <div class="user-info">
+        <div class="user-name">${user.name}</div>
+        <div class="user-email">${user.email}</div>
+        <div class="user-details">
+          <span>${user.phone}</span>
+          <span>${user.rides} rides</span>
+          <span style="color: ${statusColor}">● ${statusText}</span>
+        </div>
+      </div>
+      <div class="user-actions">
+        <button class="action-btn edit" onclick="editUser(${user.id})" title="Edit User">
+          ✏️
+        </button>
+        <button class="action-btn delete" onclick="deleteUser(${user.id})" title="Delete User">
+          🗑️
+        </button>
+      </div>
+    `;
+    
+    userList.appendChild(userDiv);
+  });
+}
+
+// Render Driver List
+function renderDriverList(filteredDrivers = null) {
+  const driverList = document.getElementById('driverList');
+  const drivers = filteredDrivers || driversData;
+  
+  driverList.innerHTML = '';
+  
+  drivers.forEach(driver => {
+    const driverDiv = document.createElement('div');
+    driverDiv.className = 'driver-item fade-in';
+    
+    const statusColor = driver.status === 'available' ? '#4CAF50' : 
+                       driver.status === 'busy' ? '#ffdd00' : '#ff6b6b';
+    const statusText = driver.status === 'available' ? 'Available' : 
+                      driver.status === 'busy' ? 'On Trip' : 'Offline';
+    
+    driverDiv.innerHTML = `
+      <div class="driver-avatar">${driver.name.charAt(0)}</div>
+      <div class="driver-info">
+        <div class="driver-name">${driver.name}</div>
+        <div class="driver-email">${driver.email}</div>
+        <div class="driver-details">
+          <span>⭐ ${driver.rating} (${driver.trips} trips)</span>
+          <span>${driver.vehicle}</span>
+          <span style="color: ${statusColor}">● ${statusText}</span>
+        </div>
+      </div>
+      <div class="driver-actions">
+        <button class="action-btn edit" onclick="editDriver(${driver.id})" title="Edit Driver">
+          ✏️
+        </button>
+        <button class="action-btn" onclick="toggleDriverStatus(${driver.id})" title="Toggle Status">
+          ${driver.online ? '🔴' : '🟢'}
+        </button>
+      </div>
+    `;
+    
+    driverList.appendChild(driverDiv);
+  });
+}
+
+// Render Recent Rides
+function renderRecentRides() {
+  const recentRides = document.getElementById('recentRides');
+  recentRides.innerHTML = '';
+  
+  recentRidesData.forEach(ride => {
+    const row = document.createElement('tr');
+    const statusColor = ride.status === 'completed' ? '#4CAF50' : 
+                       ride.status === 'ongoing' ? '#ffdd00' : '#ff6b6b';
+    
+    row.innerHTML = `
+      <td>${ride.time}</td>
+      <td>${ride.user}</td>
+      <td>${ride.driver}</td>
+      <td>${ride.amount}</td>
+      <td style="color: ${statusColor}">${ride.status.charAt(0).toUpperCase() + ride.status.slice(1)}</td>
+    `;
+    
+    recentRides.appendChild(row);
+  });
+}
+
+// Filter Users
+function filterUsers() {
+  const status = document.getElementById('userStatusFilter').value;
+  const search = document.getElementById('userSearch').value.toLowerCase();
+  
+  let filtered = usersData;
+  
+  if (status !== 'all') {
+    filtered = filtered.filter(user => user.status === status);
+  }
+  
+  if (search) {
+    filtered = filtered.filter(user => 
+      user.name.toLowerCase().includes(search) || 
+      user.email.toLowerCase().includes(search)
+    );
+  }
+  
+  renderUserList(filtered);
+}
+
+// Filter Drivers
+function filterDrivers() {
+  const status = document.getElementById('driverStatusFilter').value;
+  const search = document.getElementById('driverSearch').value.toLowerCase();
+  
+  let filtered = driversData;
+  
+  if (status !== 'all') {
+    if (status === 'online') {
+      filtered = filtered.filter(driver => driver.online);
+    } else if (status === 'offline') {
+      filtered = filtered.filter(driver => !driver.online);
+    } else {
+      filtered = filtered.filter(driver => driver.status === status);
+    }
+  }
+  
+  if (search) {
+    filtered = filtered.filter(driver => 
+      driver.name.toLowerCase().includes(search) || 
+      driver.email.toLowerCase().includes(search) ||
+      driver.vehicle.toLowerCase().includes(search)
+    );
+  }
+  
+  renderDriverList(filtered);
+}
+
+// Edit User
+function editUser(userId) {
+  const user = usersData.find(u => u.id === userId);
+  if (!user) return;
+  
+  document.getElementById('userModalTitle').textContent = 'Edit User';
+  
+  document.getElementById('userModalContent').innerHTML = `
+    <div class="form-group">
+      <label class="form-label">Full Name</label>
+      <input type="text" class="form-input" id="editUserName" value="${user.name}">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-input" id="editUserEmail" value="${user.email}">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Phone Number</label>
+      <input type="tel" class="form-input" id="editUserPhone" value="${user.phone}">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Status</label>
+      <select class="form-select" id="editUserStatus">
+        <option value="online" ${user.status === 'online' ? 'selected' : ''}>Online</option>
+        <option value="offline" ${user.status === 'offline' ? 'selected' : ''}>Offline</option>
+        <option value="in-ride" ${user.status === 'in-ride' ? 'selected' : ''}>In Ride</option>
+      </select>
+    </div>
+    
+    <div class="modal-actions">
+      <button class="small-btn" onclick="closeUserModal()">Cancel</button>
+      <button class="btn" onclick="saveUserChanges(${userId})">Save Changes</button>
+      <button class="small-btn" onclick="suspendUser(${userId})" style="background: rgba(255, 107, 107, 0.1); color: #ff6b6b;">
+        Suspend Account
+      </button>
+    </div>
+  `;
+  
+  document.getElementById('userModal').style.display = 'flex';
+}
+
+// Save User Changes
+function saveUserChanges(userId) {
+  const userIndex = usersData.findIndex(u => u.id === userId);
+  if (userIndex === -1) return;
+  
+  const name = document.getElementById('editUserName').value;
+  const email = document.getElementById('editUserEmail').value;
+  const phone = document.getElementById('editUserPhone').value;
+  const status = document.getElementById('editUserStatus').value;
+  
+  usersData[userIndex] = {
+    ...usersData[userIndex],
+    name,
+    email,
+    phone,
+    status
+  };
+  
+  renderUserList();
+  updateStats();
+  closeUserModal();
+  showNotification('User updated successfully!', 'success');
+}
+
+// Edit Driver
+function editDriver(driverId) {
+  const driver = driversData.find(d => d.id === driverId);
+  if (!driver) return;
+  
+  document.getElementById('driverModalTitle').textContent = 'Edit Driver';
+  
+  document.getElementById('driverModalContent').innerHTML = `
+    <div class="form-group">
+      <label class="form-label">Full Name</label>
+      <input type="text" class="form-input" id="editDriverName" value="${driver.name}">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-input" id="editDriverEmail" value="${driver.email}">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Phone Number</label>
+      <input type="tel" class="form-input" id="editDriverPhone" value="${driver.phone}">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Vehicle Details</label>
+      <input type="text" class="form-input" id="editDriverVehicle" value="${driver.vehicle}">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Rating</label>
+      <input type="number" class="form-input" id="editDriverRating" value="${driver.rating}" step="0.1" min="1" max="5">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Status</label>
+      <select class="form-select" id="editDriverStatus">
+        <option value="available" ${driver.status === 'available' ? 'selected' : ''}>Available</option>
+        <option value="busy" ${driver.status === 'busy' ? 'selected' : ''}>On Trip</option>
+        <option value="offline" ${driver.status === 'offline' ? 'selected' : ''}>Offline</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label" style="display: flex; align-items: center; justify-content: space-between;">
+        <span>Online Status</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="editDriverOnline" ${driver.online ? 'checked' : ''}>
+          <span class="toggle-slider"></span>
+        </label>
+      </label>
+    </div>
+    
+    <div class="modal-actions">
+      <button class="small-btn" onclick="closeDriverModal()">Cancel</button>
+      <button class="btn" onclick="saveDriverChanges(${driverId})">Save Changes</button>
+      <button class="small-btn" onclick="deactivateDriver(${driverId})" style="background: rgba(255, 107, 107, 0.1); color: #ff6b6b;">
+        Deactivate Driver
+      </button>
+    </div>
+  `;
+  
+  document.getElementById('driverModal').style.display = 'flex';
+}
+
+// Save Driver Changes
+function saveDriverChanges(driverId) {
+  const driverIndex = driversData.findIndex(d => d.id === driverId);
+  if (driverIndex === -1) return;
+  
+  const name = document.getElementById('editDriverName').value;
+  const email = document.getElementById('editDriverEmail').value;
+  const phone = document.getElementById('editDriverPhone').value;
+  const vehicle = document.getElementById('editDriverVehicle').value;
+  const rating = parseFloat(document.getElementById('editDriverRating').value);
+  const status = document.getElementById('editDriverStatus').value;
+  const online = document.getElementById('editDriverOnline').checked;
+  
+  driversData[driverIndex] = {
+    ...driversData[driverIndex],
+    name,
+    email,
+    phone,
+    vehicle,
+    rating,
+    status,
+    online
+  };
+  
+  renderDriverList();
+  updateStats();
+  closeDriverModal();
+  showNotification('Driver updated successfully!', 'success');
+}
+
+// Add New Driver
+function addNewDriver() {
+  const newId = Math.max(...driversData.map(d => d.id)) + 1;
+  
+  document.getElementById('driverModalTitle').textContent = 'Add New Driver';
+  
+  document.getElementById('driverModalContent').innerHTML = `
+    <div class="form-group">
+      <label class="form-label">Full Name</label>
+      <input type="text" class="form-input" id="newDriverName" placeholder="Enter driver's full name">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-input" id="newDriverEmail" placeholder="Enter email address">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Phone Number</label>
+      <input type="tel" class="form-input" id="newDriverPhone" placeholder="Enter phone number">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Vehicle Details</label>
+      <input type="text" class="form-input" id="newDriverVehicle" placeholder="e.g., Myvi (ABC 1234)">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">License Number</label>
+      <input type="text" class="form-input" id="newDriverLicense" placeholder="Enter license number">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Initial Rating</label>
+      <input type="number" class="form-input" id="newDriverRating" value="4.5" step="0.1" min="1" max="5">
+    </div>
+    
+    <div class="modal-actions">
+      <button class="small-btn" onclick="closeDriverModal()">Cancel</button>
+      <button class="btn" onclick="createNewDriver(${newId})">Add Driver</button>
+    </div>
+  `;
+  
+  document.getElementById('driverModal').style.display = 'flex';
+}
+
+// Create New Driver
+function createNewDriver(newId) {
+  const name = document.getElementById('newDriverName').value;
+  const email = document.getElementById('newDriverEmail').value;
+  const phone = document.getElementById('newDriverPhone').value;
+  const vehicle = document.getElementById('newDriverVehicle').value;
+  const rating = parseFloat(document.getElementById('newDriverRating').value);
+  const license = document.getElementById('newDriverLicense').value;
+  
+  if (!name || !email || !phone || !vehicle || !license) {
+    showNotification('Please fill all required fields!', 'error');
+    return;
+  }
+  
+  const newDriver = {
+    id: newId,
+    name,
+    email,
+    phone,
+    vehicle,
+    rating,
+    license,
+    status: 'available',
+    trips: 0,
+    earnings: '0.00',
+    online: true
+  };
+  
+  driversData.unshift(newDriver);
+  renderDriverList();
+  updateStats();
+  closeDriverModal();
+  showNotification('Driver added successfully!', 'success');
+}
+
+// Delete User
+function deleteUser(userId) {
+  if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+    const index = usersData.findIndex(u => u.id === userId);
+    if (index !== -1) {
+      usersData.splice(index, 1);
+      renderUserList();
+      updateStats();
+      showNotification('User deleted successfully!', 'success');
+    }
+  }
+}
+
+// Toggle Driver Status
+function toggleDriverStatus(driverId) {
+  const driverIndex = driversData.findIndex(d => d.id === driverId);
+  if (driverIndex === -1) return;
+  
+  driversData[driverIndex].online = !driversData[driverIndex].online;
+  if (!driversData[driverIndex].online) {
+    driversData[driverIndex].status = 'offline';
+  }
+  
+  renderDriverList();
+  updateStats();
+  showNotification(`Driver ${driversData[driverIndex].online ? 'activated' : 'deactivated'}!`, 'success');
+}
+
+// Deactivate Driver
+function deactivateDriver(driverId) {
+  if (confirm('Are you sure you want to deactivate this driver? They will no longer be able to accept rides.')) {
+    const driverIndex = driversData.findIndex(d => d.id === driverId);
+    if (driverIndex !== -1) {
+      driversData[driverIndex].online = false;
+      driversData[driverIndex].status = 'offline';
+      renderDriverList();
+      updateStats();
+      showNotification('Driver deactivated successfully!', 'success');
+      closeDriverModal();
+    }
+  }
+}
+
+// Suspend User
+function suspendUser(userId) {
+  if (confirm('Are you sure you want to suspend this user? They will not be able to book rides until unsuspended.')) {
+    const userIndex = usersData.findIndex(u => u.id === userId);
+    if (userIndex !== -1) {
+      usersData[userIndex].status = 'offline';
+      renderUserList();
+      showNotification('User suspended successfully!', 'success');
+      closeUserModal();
+    }
+  }
+}
+
+// Close Modals
+function closeUserModal() {
+  document.getElementById('userModal').style.display = 'none';
+}
+
+function closeDriverModal() {
+  document.getElementById('driverModal').style.display = 'none';
+}
+
+// Simulate Real-time Updates
+function simulateRealTimeUpdates() {
+  setInterval(() => {
+    // Randomly change some user statuses
+    usersData.forEach(user => {
+      if (Math.random() > 0.7) {
+        const statuses = ['online', 'offline', 'in-ride'];
+        user.status = statuses[Math.floor(Math.random() * statuses.length)];
+        user.lastActive = user.status === 'online' ? 'Just now' : 
+                         user.status === 'in-ride' ? '2 min ago' : '1 hour ago';
+      }
+    });
+    
+    // Randomly change some driver statuses
+    driversData.forEach(driver => {
+      if (driver.online && Math.random() > 0.8) {
+        driver.status = Math.random() > 0.5 ? 'available' : 'busy';
+      }
+    });
+    
+    // Add a new ride occasionally
+    if (Math.random() > 0.9 && recentRidesData.length < 10) {
+      const users = ['Alif Mukhlis', 'Nurul Huda', 'Ahmad Firdaus', 'Siti Aminah'];
+      const drivers = ['Yaseer Yahaya', 'Masturina Balqis', 'Aiman Iskandar', 'Haziq Aiman'];
+      const statuses = ['completed', 'ongoing', 'cancelled'];
+      const amounts = ['RM 8.50', 'RM 12.30', 'RM 15.20', 'RM 6.80', 'RM 10.50'];
+      
+      const newRide = {
+        id: recentRidesData.length + 1,
+        time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+        user: users[Math.floor(Math.random() * users.length)],
+        driver: drivers[Math.floor(Math.random() * drivers.length)],
+        amount: amounts[Math.floor(Math.random() * amounts.length)],
+        status: statuses[Math.floor(Math.random() * statuses.length)]
+      };
+      
+      recentRidesData.unshift(newRide);
+      if (recentRidesData.length > 5) recentRidesData.pop();
+    }
+    
+    // Update the display
+    renderUserList();
+    renderDriverList();
+    renderRecentRides();
+    updateStats();
+  }, 5000); // Update every 5 seconds
+}
+
+// Show Notification
+function showNotification(message, type) {
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  notification.innerHTML = `
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div style="font-size: 20px;">
+        ${type === 'success' ? '✓' : type === 'error' ? '✗' : '⚠️'}
+      </div>
+      <div>${message}</div>
+    </div>
+  `;
+  
+  // Style the notification
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: ${type === 'success' ? 'rgba(76, 175, 80, 0.15)' : 
+                 type === 'error' ? 'rgba(255, 107, 107, 0.15)' : 
+                 'rgba(255, 221, 0, 0.15)'};
+    border: 1px solid ${type === 'success' ? 'rgba(76, 175, 80, 0.3)' : 
+                       type === 'error' ? 'rgba(255, 107, 107, 0.3)' : 
+                       'rgba(255, 221, 0, 0.3)'};
+    color: ${type === 'success' ? '#4CAF50' : 
+            type === 'error' ? '#ff6b6b' : '#ffdd00'};
+    padding: 16px 24px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    z-index: 10000;
+    animation: slideIn 0.3s ease-out;
+  `;
+  
+  document.body.appendChild(notification);
+  
+  // Remove after 3 seconds
+  setTimeout(() => {
+    notification.style.animation = 'slideOut 0.3s ease-out';
+    setTimeout(() => {
+      document.body.removeChild(notification);
+    }, 300);
+  }, 3000);
+}
+
+// Quick Actions Functions
+function generateReport() {
+  showNotification('Generating daily report...', 'success');
+  // In a real app, this would generate and download a report
+  setTimeout(() => {
+    showNotification('Report generated successfully!', 'success');
+  }, 2000);
+}
+
+function sendBroadcast() {
+  const message = prompt('Enter broadcast message:');
+  if (message) {
+    showNotification('Broadcast sent to all users and drivers!', 'success');
+  }
+}
+
+function viewLogs() {
+  showNotification('Opening system logs...', 'success');
+  // In a real app, this would open a logs page
+}
+
+// Initialize dashboard on load
+document.addEventListener('DOMContentLoaded', initializeDashboard);
+
+// Close modals when clicking outside
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('modal-overlay')) {
+    closeUserModal();
+    closeDriverModal();
+  }
+});
+
+// Close modals with Escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeUserModal();
+    closeDriverModal();
+  }
+});
+</script>
+</body>
+</html>
