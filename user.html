@@ -1179,21 +1179,6 @@
     const fare = Math.max(subtotal + rate.base, rate.min_fare);
     
     // ROUND THE FARE TO NEAREST 10 CENTS
-    const roundedFare = roundTo10Cents(fare);
-    
-    rideStatus.innerHTML = `
-      <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-        <span>Estimated distance:</span>
-        <span style="color: var(--accent-1)">${km.toFixed(1)} km</span>
-      </div>
-      <div style="display: flex; justify-content: space-between;">
-        <span>Estimated fare:</span>
-        <span style="font-weight: 800; color: var(--accent-2)">RM ${roundedFare.toFixed(2)}</span>
-      </div>
-      <div style="font-size: 11px; color: var(--muted); margin-top: 4px;">
-        Base RM${rate.base.toFixed(2)} + RM${rate.per_km.toFixed(2)}/km × ${km.toFixed(1)}km
-      </div>
-    `;
   }
 
   /* Driver selection */
@@ -1570,4 +1555,5 @@
   computeEstimate();
 </script>
 </body>
+
 </html>
